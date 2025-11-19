@@ -1,5 +1,4 @@
 import streamlit as st
-import random
 
 # ----------- CONFIG -----------
 st.set_page_config(
@@ -44,24 +43,17 @@ st.markdown("""
         font-weight: 700;
         text-align: center;
     }
-    .gacha-btn button {
-        background-color: #ffdd57 !important;
-        color: #000 !important;
-        font-weight: 700 !important;
-        border-radius: 10px !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
 # ----------- TITLE -----------
 st.markdown("<div class='title'>🐟 RNG Ikan Roblox</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>Hitung peluang mendapatkan ikan Secret</div><br>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>Hitung peluang Secret (1% – 100%)</div><br>", unsafe_allow_html=True)
 
-
-# ----------- INPUT SECTION -----------
+# ----------- INPUT -----------
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-st.subheader("📥 Input Jumlah Ikan per Rarity")
+st.subheader("📥 Input Jumlah Ikan")
 
 legend = st.number_input("Legendary", min_value=0, value=5)
 epic = st.number_input("Epic", min_value=0, value=10)
@@ -70,62 +62,29 @@ mystic = st.number_input("Mitos", min_value=0, value=1)
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-
-# ----------- CALCULATE SECRET CHANCE -----------
+# ----------- CALC -----------
 total = legend + epic + rare + mystic
 
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("<div class='card'>", unsafe_allow_html=True)
+
 st.subheader("📊 Hasil Perhitungan")
 
 if total == 0:
     st.warning("Isi jumlah ikan dulu! Pool masih kosong.")
-    secret_chance = 0
 else:
-    secret_chance = (1 / total) * 100
+    # hitungan dasar
+    base = (1 / total) * 100
+
+    # DIPAKSA 1%–100%
+    chance = max(1, min(100, base))
+
     st.markdown(
-        f"<div class='result-box'>🎯 Peluang Secret: <br><span style='font-size:35px'>{secret_chance:.6f}%</span></div>",
+        f"<div class='result-box'>🎯 Peluang Secret:<br>"
+        f"<span style='font-size:35px'>{chance:.2f}%</span></div>",
         unsafe_allow_html=True
     )
-    st.write(f"Total ikan (tanpa secret): **{total}**")
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-
-# ----------- GACHA SIMULATION -----------
-st.markdown("<br>", unsafe_allow_html=True)
-st.markdown("<div class='card'>", unsafe_allow_html=True)
-st.subheader("🎣 Simulasi Gacha (1x)")
-
-col1, col2, col3 = st.columns([1,2,1])
-with col2:
-    st.markdown("<div class='gacha-btn'>", unsafe_allow_html=True)
-    gacha = st.button("🎁 Coba Gacha!")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-if gacha:
-
-    if total == 0:
-        st.error("Pool kosong, nggak bisa gacha.")
-    else:
-        # Secret success check based on chance
-        roll = random.random() * 100  # 0–100
-
-        if roll < secret_chance:
-            result = "Secret"
-        else:
-            # pick normal rarity proportional to amount
-            pool = (
-                ["Legendary"] * legend +
-                ["Epic"] * epic +
-                ["Rare"] * rare +
-                ["Mitos"] * mystic
-            )
-            result = random.choice(pool)
-
-        if result == "Secret":
-            st.success("🔥 SELAMAT! Kamu dapat **SECRET**!! GGWP 🚀")
-        else:
-            st.info(f"Kamu dapat: **{result}**")
+    st.write(f"Total ikan: **{total}**")
+    st.caption("Chance dibatasi di rentang 1% – 100%.")
 
 st.markdown("</div>", unsafe_allow_html=True)
